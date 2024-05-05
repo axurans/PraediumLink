@@ -21,4 +21,4 @@ A Blockchain based File Storage System for Real Estate documents enabling transp
 
 ```python client.py```
 
-5. Copy link generated from client terminal ```http://localhost:9000``` and run in a browser.
+5. Copy link generated from client terminal and run in a browser.
