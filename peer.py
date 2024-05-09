@@ -10,7 +10,7 @@ peers = []
 @app.route("/newTransaction", methods=["POST"])
 def newTransaction():
     fileData = request.get_json()
-    requiredFields = ["user", "v_file", "fileData", "fileSize"]
+    requiredFields = ["user","aadhar", "timestamp", "v_file", "fileData", "fileSize"]
     for field in requiredFields:
         if not fileData.get(field):
             return "Transaction does not have valid fields!", 404
