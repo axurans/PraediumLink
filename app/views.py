@@ -8,6 +8,7 @@ from timeit import default_timer as timer
 
 requestTx = []
 files = {}
+aadhar_name_mapping = {}
 UPLOAD_FOLDER = "app/static/Uploads"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 ADDR = "http://127.0.0.1:8800"
@@ -35,13 +36,25 @@ def index():
 def submit():
     start = timer()
     user = request.form["user"]
+    aadhar = request.form["aadhar"]
+    timestamp = request.form["timestamp"]
     upFile = request.files["v_file"]
-    
+
+    # Check if Aadhar card number or name has already been submitted
+    if aadhar in aadhar_name_mapping:
+        return "Aadhar card number already associated with a name."
+    if user in aadhar_name_mapping.values():
+        return "Name already associated with an Aadhar card number."
+
+    aadhar_name_mapping[aadhar] = user
+
     upFile.save(os.path.join("app/static/Uploads/", secure_filename(upFile.filename)))
     files[upFile.filename] = os.path.join(app.root_path, "static", "Uploads", upFile.filename)
     file_states = os.stat(files[upFile.filename]).st_size
     post_object = {
         "user": user,
+        "aadhar": aadhar,
+        "timestamp": timestamp,
         "v_file": upFile.filename,
         "fileData": str(upFile.stream.read()),
         "fileSize": file_states
