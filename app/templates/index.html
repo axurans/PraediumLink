@@ -132,32 +132,57 @@
   <div class="row mt-5">
     <div class="col-md-8 offset-md-2">
       <h2 class="text-center alert alert-dark">Upload Real Estate File</h2>
+      <!-- Upload form -->
       <form action="/submit" method="POST" enctype="multipart/form-data">
         <div class="form-group">
-          <label>Document Owner:</label>
+          <label for="name">Document Owner:</label>
           <input
             type="text"
             class="form-control col-md-4"
             name="user"
+            id="name"
             placeholder="Enter Your Name"
+            required
           />
         </div>
 
         <div class="form-group">
-          <label for="exampleFormControlTextarea1"
-            >Upload Document(PDF and JPEG only):</label
-          >
+          <label for="aadhar">Aadhar Card Number:</label>
+          <input
+            type="text"
+            class="form-control col-md-4"
+            name="aadhar"
+            id="aadhar"
+            placeholder="Format: 1234-1234-1234"
+            pattern="\d{4}-\d{4}-\d{4}"
+            title="Please enter in the format 1234-5678-9123"
+            required
+          />
+        </div>
+
+        <!-- Hidden timestamp field -->
+        <input type="hidden" id="timestamp" name="timestamp" value="" />
+
+        <div class="form-group">
+          <label for="fileUpld">Upload Document (PDF and JPEG only):</label>
           <br />
           <input
             type="file"
             id="fileUpld"
             name="v_file"
             accept="application/pdf,image/jpeg"
+            required
           />
         </div>
         <div class="text-center">
           <!-- Centered button -->
-          <button type="submit" class="btn btn-default mb-2">Upload</button>
+          <button
+            type="submit"
+            class="btn btn-default mb-2"
+            onclick="setTimestamp()"
+          >
+            Upload
+          </button>
         </div>
       </form>
     </div>
@@ -166,6 +191,7 @@
   <div class="row mt-5">
     <div class="col-md-8 offset-md-2">
       <h2 class="text-center alert alert-dark">Real Estate Documents Shared</h2>
+      <!-- Display shared documents -->
       {% for post in request_tx %}
       <div
         class="post_box"
@@ -186,14 +212,17 @@
           >
             {{post.user[0]}}
           </div>
-          <div class="name-header" style="color: black">{{post.user}}</div>
+          <div class="name-header" style="color: black">
+            {{post.user}} | {{post.aadhar}}
+          </div>
         </div>
         <div>
           <div class="post_box-body">
+            <p>Uploaded at: {{ post.timestamp }}</p>
             <p>
               {{post.v_file}}:
               <a
-                href="{{url_for('download_file',variable = post.v_file)}}"
+                href="{{url_for('download_file', variable=post.v_file)}}"
                 style="color: rgb(34, 33, 33)"
                 >Download File</a
               >
@@ -205,5 +234,28 @@
     </div>
   </div>
 </div>
+
+<script>
+  function setTimestamp() {
+    var timestampInput = document.getElementById("timestamp");
+    var timestampValue = new Date().toISOString();
+
+    // Format the timestamp
+    var date = new Date(timestampValue);
+    var options = {
+      year: "numeric",
+      month: "short",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      timeZone: "Asia/Kolkata", // Convert to IST
+    };
+    var formattedTimestamp = date.toLocaleString("en-US", options);
+
+    // Set the value of the timestamp input field
+    timestampInput.value = formattedTimestamp;
+  }
+</script>
 
 {% endblock %}
