@@ -33,20 +33,22 @@ def index():
     return render_template("index.html", title="RealEstateFileStorage", subtitle="A Blockchain Real Estate File Storage", node_address=ADDR, request_tx=requestTx)
 
 @app.route("/submit", methods=["POST"])
+@app.route("/submit", methods=["POST"])
 def submit():
-    start = timer()
     user = request.form["user"]
     aadhar = request.form["aadhar"]
     timestamp = request.form["timestamp"]
     upFile = request.files["v_file"]
 
-    # Check if Aadhar card number or name has already been submitted
-    if aadhar in aadhar_name_mapping:
-        return "Aadhar card number already associated with a name."
-    if user in aadhar_name_mapping.values():
-        return "Name already associated with an Aadhar card number."
+    
+    if upFile.filename in files:
+        return "File already uploaded."
 
-    aadhar_name_mapping[aadhar] = user
+    if aadhar in aadhar_name_mapping:
+        if user != aadhar_name_mapping[aadhar]:
+            return "Aadhar card number already associated with a different name."
+    else:
+        aadhar_name_mapping[aadhar] = user
 
     upFile.save(os.path.join("app/static/Uploads/", secure_filename(upFile.filename)))
     files[upFile.filename] = os.path.join(app.root_path, "static", "Uploads", upFile.filename)
@@ -59,12 +61,13 @@ def submit():
         "fileData": str(upFile.stream.read()),
         "fileSize": file_states
     }
-   
+
     address = "{0}/newTransaction".format(ADDR)
     requests.post(address, json=post_object)
-    end = timer()
-    print(end - start)
+    
     return redirect("/")
+
+
 
 @app.route("/submit/<string:variable>", methods=["GET"])
 def download_file(variable):
