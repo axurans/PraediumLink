@@ -1,4 +1,4 @@
-from hashlib import sha256
+from hashlib import sha3_512
 
 class Block:
     def __init__(self, index, transactions, prevHash):
@@ -9,7 +9,7 @@ class Block:
 
     def genHash(self):
         allDataCombined = str(self.index) + str(self.nonce) + self.prevHash + str(self.transactions)
-        return sha256(allDataCombined.encode()).hexdigest()
+        return sha3_512(allDataCombined.encode()).hexdigest()
     
     def addT(self, t):
         self.transactions.append(t)
