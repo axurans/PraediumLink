@@ -213,7 +213,16 @@
             {{post.user[0]}}
           </div>
           <div class="name-header" style="color: black">
-            {{post.user}} | {{post.aadhar}}
+            {{post.user}} |
+            <span id="aadhar-{{ loop.index }}" style="margin-right: 1rem">
+              xxxx-xxxx-{{ post.aadhar[-4:] }}
+            </span>
+            <i
+              id="eye-icon-{{ loop.index }}"
+              class="fa fa-eye"
+              style="cursor: pointer; color: gray"
+              onclick="toggleAadhar('{{ loop.index }}', '{{ post.aadhar }}')"
+            ></i>
           </div>
         </div>
         <div>
@@ -255,6 +264,23 @@
 
     // Set the value of the timestamp input field
     timestampInput.value = formattedTimestamp;
+  }
+
+  function toggleAadhar(index, fullAadhar) {
+    const aadharSpan = document.getElementById(`aadhar-${index}`);
+    const eyeIcon = document.getElementById(`eye-icon-${index}`);
+
+    if (aadharSpan.textContent.startsWith("xxxx")) {
+      // Show full Aadhar
+      aadharSpan.textContent = fullAadhar;
+      eyeIcon.classList.remove("fa-eye");
+      eyeIcon.classList.add("fa-eye-slash");
+    } else {
+      // Mask Aadhar
+      aadharSpan.textContent = `xxxx-xxxx-${fullAadhar.slice(-4)}`;
+      eyeIcon.classList.remove("fa-eye-slash");
+      eyeIcon.classList.add("fa-eye");
+    }
   }
 </script>
 
